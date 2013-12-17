@@ -1,7 +1,7 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
     tickerUrl = "https://pln.bitcurex.com/data/ticker.json",
     tradesUrl = "https://pln.bitcurex.com/data/trades.json", timeVar = 'date', priceVar = 'price',
-    width = 207, height = 153, leftPadding = 35, rightPadding = 10, bottomPadding = 20,
+    width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
     lastEl = document.querySelector("#last"),
     data = [], line, x, y, svg, xAxis, yAxis;
 
