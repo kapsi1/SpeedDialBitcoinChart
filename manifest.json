@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Speed Dial Bitcurex Chart",
+  "description": "A chart and ticker for pln.bitcurex.com",
+  "version": "1.0",
+  "background": {"page": "background.html"},
+  "options_page": "options.html",
+  "icons": { "16": "icon_16.png",
+             "48": "icon_48.png",
+            "128": "icon_128.png" },
+
+  "permissions": ["speeddial", "https://pln.bitcurex.com/"],
+  "speeddial": {
+    "url": "http://bitcoinity.org/markets/bitcurex/PLN",
+    "title": "Bitcoinity"
+  }
+}
