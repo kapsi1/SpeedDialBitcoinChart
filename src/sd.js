@@ -135,17 +135,3 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 getOptions();
 reload();
-
-//function getTestData() {
-//    var xhr = new XMLHttpRequest();
-//    xhr.onload = function () {
-//        var d = new Date();
-//        data = JSON.parse(this.response).filter(function (transaction) {
-//            return (d - transaction.date * 1000) / 1000 / 60 < options.chartTimeRange; //time in minutes
-//        });
-//        updateChart();
-//    }
-//    xhr.open("GET", chrome.extension.getURL('testData.json'), true);
-//    xhr.send();
-//}
-//getTestData();
