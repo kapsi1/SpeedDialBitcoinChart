@@ -1,17 +1,27 @@
 body {
-    margin: 0px;
+    margin: 0;
     font-family: sans-serif;
 }
-#last {
+
+#exchange, #last-value {
     font-size: 16px;
     position: absolute;
+}
+
+#exchange {
+    left: 3px;
+}
+
+#last-value {
     right: 3px;
 }
+
 path {
     stroke: steelblue;
     stroke-width: 1;
     fill: none;
 }
+
 .axis path,
 .axis line {
     fill: none;

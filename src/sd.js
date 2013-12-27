@@ -1,7 +1,7 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
     width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
-    lastEl = document.querySelector("#last"),
-    dataSrc, data = [], line, x, y, svg, xAxis, yAxis;
+    lastEl = document.getElementById("last-value"),
+    dataSrc, exchange, data = [], line, x, y, svg, xAxis, yAxis;
 
 function getOptions() {
     var refreshMinutes = localStorage.getItem('refreshMinutes') || 1,
@@ -14,17 +14,19 @@ function getOptions() {
     };
     var i, j, currency = localStorage.getItem('currency');
     if (currency) {
-        for (i = 0; i < dataSources.length; i++) {
-            for (j = 0; j < dataSources[i].currencies.length; j++) {
-                if (dataSources[i].currencies[j].type === currency) {
-                    dataSrc = dataSources[i].currencies[j];
+        for (i = 0; i < exchanges.length; i++) {
+            for (j = 0; j < exchanges[i].currencies.length; j++) {
+                if (exchanges[i].currencies[j].type === currency) {
+                    dataSrc = exchanges[i].currencies[j];
+                    exchange = exchanges[i].exchange;
                 }
             }
         }
     } else {
-        dataSrc = dataSources[0].currencies[0];
+        dataSrc = exchanges[0].currencies[0];
+        exchange = exchanges[0].exchange;
     }
-    console.log('dataSrc', dataSrc);
+    document.getElementById('exchange').textContent = exchange;
 }
 
 line = d3.svg.line()

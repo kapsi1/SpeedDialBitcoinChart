@@ -34,66 +34,79 @@ Array.prototype.forEach.call(document.querySelectorAll('input[name="range"]'), f
     });
 });
 
-var sourcesEl = document.getElementById('sources'),
+var exchangesEl = document.getElementById('exchanges'),
     currenciesEl = document.getElementById('currencies');
 
 function activate(li) {
     Array.prototype.forEach.call(document.querySelectorAll('#' + li.parentNode.id + ' li'), function (el) {
-        el.className = '';
+        el.classList.remove('active');
     });
-    li.className = 'active';
+    li.classList.add('active');
 }
 
 function showCurrencies(exchange) {
     Array.prototype.forEach.call(document.querySelectorAll('#currencies ul'), function (el) {
-        el.style.display = 'none';
+        el.classList.add('hidden');
     });
-    document.querySelector('#currencies #' + exchange).style.display = 'block';
+    document.querySelector('#currencies #' + exchange).classList.remove('hidden');
 }
 
-function setCurrency(currency) {
-    console.log('setCurrency', currency);
-    localStorage.setItem('currency', currency);
+function setExchange(exchangeEl) {
+    var exchange = exchangeEl.textContent;
+    console.log('setExchange', exchange);
+    showCurrencies(exchange);
+    activate(exchangeEl);
+    activate(document.querySelector('#' + exchange + ' li'));
+//    setCurrency(document.querySelector('#' + exchange + ' li'));
+    localStorage.setItem('exchange', exchange);
+//    notifyOptionsChanged();
+}
+
+function setCurrency(currencyEl) {
+    console.log('setCurrency', currencyEl.textContent);
+    activate(currencyEl);
+    set('currency', currencyEl.textContent);
     notifyOptionsChanged();
 }
 
-dataSources.forEach(function (server) {
+exchanges.forEach(function (server) {
     var li = document.createElement('li'),
         a = document.createElement('a');
     a.textContent = server.exchange;
+    li.classList.add(server.exchange);
     a.href = '#';
     li.appendChild(a);
-    sourcesEl.appendChild(li);
+    exchangesEl.appendChild(li);
 
     var ul = document.createElement('ul');
-    ul.className = 'nav nav-pills';
+    ul.classList.add('nav', 'nav-pills');
     ul.id = server.exchange;
-    server.currencies.forEach(function (currency) {
+    server.currencies.forEach(function (currencyObj) {
         var li = document.createElement('li'),
             a = document.createElement('a');
-        a.textContent = currency.type;
+        a.textContent = currencyObj.type;
         a.href = '#';
+        li.classList.add(currencyObj.type);
         li.appendChild(a);
         ul.appendChild(li);
     });
     currenciesEl.appendChild(ul);
 });
-activate(document.querySelector('#sources li'));
-var firstServer = document.querySelector('#sources a').textContent;
-showCurrencies(firstServer);
-activate(document.querySelector('#' + firstServer + ' li'));
 
-Array.prototype.forEach.call(document.querySelectorAll('#sources li'), function (el) {
+var exchange = get('exchange') || document.querySelector('#exchanges a').textContent,
+    currency = get('currency') || document.querySelector('#currencies a').textContent;
+
+setExchange(document.querySelector('#exchanges .' + exchange));
+setCurrency(document.querySelector('#currencies .' + currency.replace('/', '\\/') + ':not(.hidden)'));
+
+Array.prototype.forEach.call(document.querySelectorAll('#exchanges li'), function (el) {
     el.addEventListener('click', function () {
-        activate(el);
-        showCurrencies(el.textContent);
-        activate(document.querySelector('#' + el.textContent + ' li'));
-        setCurrency(document.querySelector('#' + el.textContent + ' li').textContent);
+        setExchange(el);
+//        setCurrency(document.querySelector('#currencies li'));
     });
 });
 Array.prototype.forEach.call(document.querySelectorAll('#currencies li'), function (el) {
     el.addEventListener('click', function () {
-        activate(el);
-        setCurrency(el.textContent);
+        setCurrency(el);
     });
 });

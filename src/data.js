@@ -1,7 +1,7 @@
-if (!dataSources) {
-    var dataSources, sourcesXhr;
+if (!exchanges) {
+    var exchanges, sourcesXhr;
     sourcesXhr = new XMLHttpRequest();
-    sourcesXhr.open("GET", chrome.extension.getURL('dataSources.json'), false);
+    sourcesXhr.open("GET", chrome.extension.getURL('exchanges.json'), false);
     sourcesXhr.send();
-    dataSources = JSON.parse(sourcesXhr.response);
+    exchanges = JSON.parse(sourcesXhr.response);
 }

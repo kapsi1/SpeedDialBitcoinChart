@@ -9,3 +9,7 @@
 .nav-pills li {
     width: 90px;
 }
+
+.hidden {
+    display: none;
+}
