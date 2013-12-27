@@ -1,3 +1,11 @@
 .refresh {
     width: 50px;
 }
+
+.nav-pills {
+    margin-bottom: 10px;
+}
+
+.nav-pills li {
+    width: 90px;
+}

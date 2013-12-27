@@ -1,0 +1,57 @@
+[
+    {
+        "exchange": "Bitcurex",
+        "currencies": [
+            {
+                "type": "BTC/PLN",
+                "ticker": {
+                    "url": "https://pln.bitcurex.com/data/ticker.json",
+                    "containerObject": null,
+                    "timeVar": "time",
+                    "priceVar": "last"
+                },
+                "trades": {
+                    "url": "https://pln.bitcurex.com/data/trades.json",
+                    "timeVar": "date",
+                    "priceVar": "price",
+                    "rangeMinutes": 1440
+                }
+            }
+        ]
+    },
+    {
+        "exchange": "BTC-E",
+        "currencies": [
+            {
+                "type": "BTC/USD",
+                "ticker": {
+                    "url": "https://btc-e.com/api/2/btc_usd/ticker",
+                    "containerObject": "ticker",
+                    "timeVar": "updated",
+                    "priceVar": "last"
+                },
+                "trades": {
+                    "url": "https://btc-e.com/api/2/btc_usd/trades",
+                    "timeVar": "date",
+                    "priceVar": "price",
+                    "rangeMinutes": 10
+                }
+            },
+            {
+                "type": "LTC/USD",
+                "ticker": {
+                    "url": "https://btc-e.com/api/2/ltc_usd/ticker",
+                    "containerObject": "ticker",
+                    "timeVar": "updated",
+                    "priceVar": "last"
+                },
+                "trades": {
+                    "url": "https://btc-e.com/api/2/ltc_usd/trades",
+                    "timeVar": "date",
+                    "priceVar": "price",
+                    "rangeMinutes": 10
+                }
+            }
+        ]
+    }
+]

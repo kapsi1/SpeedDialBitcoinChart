@@ -1,9 +1,7 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
-    tickerUrl = "https://pln.bitcurex.com/data/ticker.json",
-    tradesUrl = "https://pln.bitcurex.com/data/trades.json", timeVar = 'date', priceVar = 'price',
     width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
     lastEl = document.querySelector("#last"),
-    data = [], line, x, y, svg, xAxis, yAxis;
+    dataSrc, data = [], line, x, y, svg, xAxis, yAxis;
 
 function getOptions() {
     var refreshMinutes = localStorage.getItem('refreshMinutes') || 1,
@@ -13,15 +11,28 @@ function getOptions() {
         chartRefreshTime: +refreshMinutes * 60 * 1000 + (+refreshSeconds * 1000),
         lastValRefreshTime: +refreshLastValSeconds * 1000,
         chartTimeRange: +localStorage.getItem('range') || 1440
+    };
+    var i, j, currency = localStorage.getItem('currency');
+    if (currency) {
+        for (i = 0; i < dataSources.length; i++) {
+            for (j = 0; j < dataSources[i].currencies.length; j++) {
+                if (dataSources[i].currencies[j].type === currency) {
+                    dataSrc = dataSources[i].currencies[j];
+                }
+            }
+        }
+    } else {
+        dataSrc = dataSources[0].currencies[0];
     }
+    console.log('dataSrc', dataSrc);
 }
 
 line = d3.svg.line()
     .x(function (d) {
-        return x(1000 * d[timeVar]);
+        return x(1000 * d[dataSrc.trades.timeVar]);
     })
     .y(function (d) {
-        return y(d[priceVar]);
+        return y(d[dataSrc.trades.priceVar]);
     });
 x = d3.time.scale().range([leftPadding, width - rightPadding]);
 y = d3.scale.linear().range([height - bottomPadding, bottomPadding]);
@@ -47,19 +58,19 @@ svg.append("g")
 
 function updateChart() {
     x.domain(d3.extent(data, function (d) {
-        return 1000 * d[timeVar];
+        return 1000 * d[dataSrc.trades.timeVar];
     }));
     y.domain([
         d3.min(data, function (d) {
-            return d[priceVar];
+            return d[dataSrc.trades.priceVar];
         }),
         d3.max(data, function (d) {
-            return d[priceVar];
+            return d[dataSrc.trades.priceVar];
         })
     ]);
 
     var lineGraph = svg.selectAll("#chart>path").data([data], function (d) {
-        return 1000 * d[timeVar];
+        return 1000 * d[dataSrc.trades.timeVar];
     });
 
     lineGraph.enter().append("path").attr("d", line);
@@ -78,8 +89,14 @@ function updateChart() {
 }
 
 tickerReq.onload = function () {
-    lastEl.textContent = +JSON.parse(this.response).last;
-}
+    var value, res = JSON.parse(this.response);
+    if (dataSrc.ticker.containerObject) {
+        value = res[dataSrc.ticker.containerObject][dataSrc.ticker.priceVar];
+    } else {
+        value = res[dataSrc.ticker.priceVar];
+    }
+    lastEl.textContent = +value + ' ' + dataSrc.type;
+};
 
 tradesReq.onload = function () {
     var d = new Date();
@@ -95,17 +112,17 @@ function reload() {
     clearInterval(tickerTimer);
 
     tickerTimer = setInterval(function () {
-        tickerReq.open("get", tickerUrl, true);
+        tickerReq.open("get", dataSrc.ticker.url, true);
         tickerReq.send();
     }, options.lastValRefreshTime);
-    tickerReq.open("get", tickerUrl, true);
+    tickerReq.open("get", dataSrc.ticker.url, true);
     tickerReq.send();
 
     chartTimer = setInterval(function () {
-        tradesReq.open("get", tradesUrl, true);
+        tradesReq.open("get", dataSrc.trades.url, true);
         tradesReq.send();
     }, options.chartRefreshTime);
-    tradesReq.open("get", tradesUrl, true);
+    tradesReq.open("get", dataSrc.trades.url, true);
     tradesReq.send();
 }
 

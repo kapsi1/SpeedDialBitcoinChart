@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Bitcurex Ticker options</title>
+    <link href="../lib/bootstrap.min.css" rel="stylesheet"/>
     <link href="options.css" rel="stylesheet"/>
 </head>
 <body>
@@ -10,13 +11,18 @@
 <form name="form">
     <p>
         Refresh chart data every
-        <input type="number" class="refresh" id="refreshMinutes" min="0" value="1"> minutes
-        <input type="number" class="refresh" id="refreshSeconds" min="0" value="0"> seconds
+        <input type="number" class="refresh" id="refreshMinutes" min="0" value="1"><label for="refreshMinutes">
+        minutes</label>
+        <input type="number" class="refresh" id="refreshSeconds" min="0" value="0"><label for="refreshSeconds">
+        seconds</label>
     </p>
+
     <p>
         Refresh last value every
-        <input type="number" class="refresh" id="refreshLastValSeconds" min="0" value="10"> seconds
+        <input type="number" class="refresh" id="refreshLastValSeconds" min="0" value="10"><label
+            for="refreshLastValSeconds"> seconds</label>
     </p>
+
     <p>
         Show chart data from last
         <input type="radio" name="range" id="range1" value="10"><label for="range1">10 minutes</label>
@@ -26,7 +32,14 @@
         <input type="radio" name="range" id="range5" value="1440" checked><label for="range5">24 hours</label>
         <!--<input type="radio" name="range" id="range6" value="4320"><label for="range6">3 days</label>-->
     </p>
+
+    <p>
+        Show data from:
+    </p>
+    <ul id="sources" class="nav nav-pills"></ul>
+    <div id="currencies"></div>
 </form>
+<script src="data.js"></script>
 <script src="options.js"></script>
 </body>
 </html>
