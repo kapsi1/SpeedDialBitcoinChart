@@ -1,7 +1,8 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
     width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
     lastEl = document.getElementById("last-value"),
-    currencyObj, exchange, data = [], line, x, y, svg, xAxis, yAxis;
+    currency, lastCurrency, currencyObj, exchange, lastExchange,
+    dataArr = [], dataSet = {}, line, x, y, svg, xAxis, yAxis;
 
 function getOptions() {
     var refreshMinutes = localStorage.getItem('refreshMinutes') || 1,
@@ -12,20 +13,31 @@ function getOptions() {
         lastValRefreshTime: +refreshLastValSeconds * 1000,
         chartTimeRange: +localStorage.getItem('range') || 1440
     };
-    var i, j, currency = localStorage.getItem('currency');
-    if (currency) {
-        for (i = 0; i < exchanges.length; i++) {
-            for (j = 0; j < exchanges[i].currencies.length; j++) {
-                if (exchanges[i].currencies[j].type === currency) {
-                    currencyObj = exchanges[i].currencies[j];
-                    exchange = exchanges[i].exchange;
+
+    (function () {
+        var i, j;
+        lastCurrency = currency;
+        lastExchange = exchange;
+        currency = localStorage.getItem('currency');
+        exchange = localStorage.getItem('exchange');
+        if (exchange && currency) {
+            if (currency === lastCurrency && exchange === lastExchange) return;
+            for (i = 0; i < exchanges.length; i++) {
+                if (exchanges[i].exchange === exchange) {
+                    for (j = 0; j < exchanges[i].currencies.length; j++) {
+                        if (exchanges[i].currencies[j].type === currency) {
+                            currencyObj = exchanges[i].currencies[j];
+                            return;
+                        }
+                    }
                 }
             }
+        } else {
+            currencyObj = exchanges[0].currencies[0];
+            exchange = exchanges[0].exchange;
         }
-    } else {
-        currencyObj = exchanges[0].currencies[0];
-        exchange = exchanges[0].exchange;
-    }
+    })();
+
     document.getElementById('exchange').textContent = exchange;
 }
 
@@ -36,6 +48,7 @@ line = d3.svg.line()
     .y(function (d) {
         return y(d[currencyObj.trades.priceVar]);
     });
+
 x = d3.time.scale().range([leftPadding, width - rightPadding]);
 y = d3.scale.linear().range([height - bottomPadding, bottomPadding]);
 svg = d3.select("svg")
@@ -59,19 +72,19 @@ svg.append("g")
     .attr("transform", 'translate(' + (leftPadding - 0) + ',' + 0 + ')');
 
 function updateChart() {
-    x.domain(d3.extent(data, function (d) {
+    x.domain(d3.extent(dataArr, function (d) {
         return 1000 * d[currencyObj.trades.timeVar];
     }));
     y.domain([
-        d3.min(data, function (d) {
+        d3.min(dataArr, function (d) {
             return d[currencyObj.trades.priceVar];
         }),
-        d3.max(data, function (d) {
+        d3.max(dataArr, function (d) {
             return d[currencyObj.trades.priceVar];
         })
     ]);
 
-    var lineGraph = svg.selectAll("#chart>path").data([data], function (d) {
+    var lineGraph = svg.selectAll("#chart>path").data([dataArr], function (d) {
         return 1000 * d[currencyObj.trades.timeVar];
     });
 
@@ -94,10 +107,26 @@ tickerReq.onload = function () {
 };
 
 tradesReq.onload = function () {
-    var d = new Date(), serverData = JSON.parse(this.response);
-    data = serverData.filter(function (transaction) {
-        return (d - transaction.date * 1000) / 1000 / 60 < options.chartTimeRange; //time in minutes
+    var transaction, d = new Date(), serverData = JSON.parse(this.response);
+
+    dataArr = [];
+
+    serverData.forEach(function (transaction) {
+        dataSet[transaction.date] = transaction;
     });
+
+    for (transaction in dataSet) {
+        if (dataSet.hasOwnProperty(transaction))
+            dataArr.push(dataSet[transaction]);
+    }
+
+    dataArr = dataArr
+        .filter(function (transaction) {
+            return (d - transaction.date * 1000) / 1000 / 60 < options.chartTimeRange; //time in minutes
+        })
+        .sort(function (a, b) {
+            return a.date - b.date;
+        });
 
     updateChart();
 };
@@ -105,6 +134,9 @@ tradesReq.onload = function () {
 function reload() {
     clearInterval(chartTimer);
     clearInterval(tickerTimer);
+
+    if (lastCurrency !== currency || lastExchange !== exchange)
+        dataSet = {};
 
     tickerTimer = setInterval(function () {
         tickerReq.open("get", currencyObj.ticker.url, true);
