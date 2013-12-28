@@ -1,7 +1,7 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
     width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
     lastEl = document.getElementById("last-value"),
-    dataSrc, exchange, data = [], dataSet = {}, line, x, y, svg, xAxis, yAxis;
+    dataSrc, exchange, data = [], line, x, y, svg, xAxis, yAxis;
 
 function getOptions() {
     var refreshMinutes = localStorage.getItem('refreshMinutes') || 1,
@@ -101,22 +101,10 @@ tickerReq.onload = function () {
 };
 
 tradesReq.onload = function () {
-    var dp, d = new Date(), serverData = JSON.parse(this.response);
-    serverData.forEach(function (dp) {
-        dataSet[dp.date] = dp;
+    var d = new Date(), serverData = JSON.parse(this.response);
+    data = serverData.filter(function (transaction) {
+        return (d - transaction.date * 1000) / 1000 / 60 < options.chartTimeRange; //time in minutes
     });
-    data = [];
-    for (dp in dataSet) {
-        if (dataSet.hasOwnProperty(dp))
-            data.push(dataSet[dp]);
-    }
-    data = data.sort(function (a, b) {
-        return a.date - b.date;
-    });
-    console.log(data.length);
-//    data = serverData.filter(function (transaction) {
-//        return (d - transaction.date * 1000) / 1000 / 60 < options.chartTimeRange; //time in minutes
-//    });
 
     updateChart();
 };
