@@ -78,13 +78,13 @@ function updateChart() {
     lineGraph.enter().append("path").attr("d", line);
 
     lineGraph
-        .attr("d", line);
-//        .attr("transform", null)
-//        .transition(1000)
-//        .ease("linear")
-//        .attr("transform", "translate(" + (
-//            x(1000 * data[data.length - 1].date) - x(1000 * data[data.length - 2].date)
-//            ) + ")");
+        .attr("d", line)
+        .attr("transform", null)
+        .transition(1000)
+        .ease("linear")
+        .attr("transform", "translate(" + (
+            x(1000 * data[data.length - 1].date) - x(1000 * data[data.length - 2].date)
+            ) + ")");
 
     svg.selectAll(".xaxis").call(xAxis);
     svg.selectAll(".yaxis").call(yAxis);
