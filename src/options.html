@@ -11,15 +11,15 @@
 <form name="form">
     <p>
         Refresh chart data every
-        <input type="number" class="refresh" id="refreshMinutes" min="0" value="1"><label for="refreshMinutes">
+        <input type="number" class="refresh-time" id="refreshMinutes" min="0" value="1"><label for="refreshMinutes">
         minutes</label>
-        <input type="number" class="refresh" id="refreshSeconds" min="0" value="0"><label for="refreshSeconds">
+        <input type="number" class="refresh-time" id="refreshSeconds" min="0" value="0"><label for="refreshSeconds">
         seconds</label>
     </p>
 
     <p>
         Refresh last value every
-        <input type="number" class="refresh" id="refreshLastValSeconds" min="0" value="10"><label
+        <input type="number" class="refresh-time" id="refreshLastValSeconds" min="0" value="10"><label
             for="refreshLastValSeconds"> seconds</label>
     </p>
 
@@ -36,6 +36,7 @@
     <p>
         Show data from:
     </p>
+    <!--<div id="exchanges"></div>-->
     <ul id="exchanges" class="nav nav-pills"></ul>
     <div id="currencies"></div>
 </form>

@@ -1,15 +1,17 @@
 function notifyOptionsChanged() {
     chrome.runtime.sendMessage(null, 'optionsChanged');
 }
+function set(id, value) {
+    return localStorage.setItem.call(localStorage, id, value);
+}
+function get(id) {
+    return localStorage.getItem.call(localStorage, id);
+}
+function eachElement(selector, fn) {
+    Array.prototype.forEach.call(document.querySelectorAll(selector), fn);
+}
 
-var set = function (id, value) {
-        return localStorage.setItem.call(localStorage, id, value);
-    },
-    get = function (id) {
-        return localStorage.getItem.call(localStorage, id);
-    };
-
-Array.prototype.forEach.call(document.querySelectorAll('.refresh'), function (el) {
+eachElement('.refresh-time', function (el) {
     el.value = get(el.id) || el.value;
 
     el.addEventListener('change', function () {
@@ -21,8 +23,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.refresh'), function (el
 });
 
 var range = get('range');
-
-Array.prototype.forEach.call(document.querySelectorAll('input[name="range"]'), function (el) {
+eachElement('input[name="range"]', function (el) {
     if (el.value === range) {
         el.checked = true;
     }
@@ -37,15 +38,15 @@ Array.prototype.forEach.call(document.querySelectorAll('input[name="range"]'), f
 var exchangesEl = document.getElementById('exchanges'),
     currenciesEl = document.getElementById('currencies');
 
-function activate(li) {
-    Array.prototype.forEach.call(document.querySelectorAll('#' + li.parentNode.id + ' li'), function (el) {
+function activateElement(li) {
+    eachElement('#' + li.parentNode.id + ' li', function (el) {
         el.classList.remove('active');
     });
     li.classList.add('active');
 }
 
 function showCurrencies(exchange) {
-    Array.prototype.forEach.call(document.querySelectorAll('#currencies ul'), function (el) {
+    eachElement('#currencies ul', function (el) {
         el.classList.add('hidden');
     });
     document.querySelector('#currencies #' + exchange).classList.remove('hidden');
@@ -55,16 +56,14 @@ function setExchange(exchangeEl) {
     var exchange = exchangeEl.textContent;
     console.log('setExchange', exchange);
     showCurrencies(exchange);
-    activate(exchangeEl);
-    activate(document.querySelector('#' + exchange + ' li'));
-//    setCurrency(document.querySelector('#' + exchange + ' li'));
-    localStorage.setItem('exchange', exchange);
-//    notifyOptionsChanged();
+    activateElement(exchangeEl);
+    set('exchange', exchange);
+//    setCurrency()
 }
 
 function setCurrency(currencyEl) {
     console.log('setCurrency', currencyEl.textContent);
-    activate(currencyEl);
+    activateElement(currencyEl);
     set('currency', currencyEl.textContent);
     notifyOptionsChanged();
 }
