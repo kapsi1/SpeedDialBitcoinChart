@@ -3,7 +3,7 @@
   "name": "Speed Dial Bitcurex Chart",
   "description": "A chart and ticker for pln.bitcurex.com",
   "version": "1.0",
-  "background": {"page": "src/background.html"},
+  "background": {"page": "src/sd.html"},
   "options_page": "src/options.html",
   "icons": { "16": "img/icon_16.png",
              "48": "img/icon_48.png",

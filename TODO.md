@@ -1,0 +1,1 @@
+- use average value for trades commited in the same timestamp, instead of last one
