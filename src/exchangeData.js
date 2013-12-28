@@ -2,10 +2,10 @@
 (function () {
     'use strict';
     var sourcesXhr;
-    if (!window.exchanges) {
+    if (!window.dataSources) {
         sourcesXhr = new XMLHttpRequest();
         sourcesXhr.open("GET", chrome.extension.getURL('exchanges.json'), false);
         sourcesXhr.send();
-        window.exchanges = JSON.parse(sourcesXhr.response);
+        window.dataSources = JSON.parse(sourcesXhr.response);
     }
 })();

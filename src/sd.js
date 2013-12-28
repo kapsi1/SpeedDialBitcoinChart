@@ -27,19 +27,19 @@
             exchange = localStorage.getItem('exchange');
             if (exchange && currency) {
                 if (currency === lastCurrency && exchange === lastExchange) return;
-                for (i = 0; i < window.exchanges.length; i++) {
-                    if (window.exchanges[i].exchange === exchange) {
-                        for (j = 0; j < window.exchanges[i].currencies.length; j++) {
-                            if (window.exchanges[i].currencies[j].type === currency) {
-                                currencyObj = window.exchanges[i].currencies[j];
+                for (i = 0; i < window.dataSources.length; i++) {
+                    if (window.dataSources[i].exchange === exchange) {
+                        for (j = 0; j < window.dataSources[i].currencies.length; j++) {
+                            if (window.dataSources[i].currencies[j].type === currency) {
+                                currencyObj = window.dataSources[i].currencies[j];
                                 return;
                             }
                         }
                     }
                 }
             } else {
-                currencyObj = window.exchanges[0].currencies[0];
-                exchange = window.exchanges[0].exchange;
+                currencyObj = window.dataSources[0].currencies[0];
+                exchange = window.dataSources[0].exchange;
             }
         })();
 
