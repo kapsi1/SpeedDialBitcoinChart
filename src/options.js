@@ -2,13 +2,26 @@ function notifyOptionsChanged() {
     chrome.runtime.sendMessage(null, 'optionsChanged');
 }
 function set(id, value) {
-    return localStorage.setItem.call(localStorage, id, value);
+    localStorage.setItem.call(localStorage, id, value);
+    notifyOptionsChanged();
 }
 function get(id) {
     return localStorage.getItem.call(localStorage, id);
 }
-function eachElement(selector, fn) {
-    Array.prototype.forEach.call(document.querySelectorAll(selector), fn);
+function eachElement(arg1, fn) {
+    if (typeof arg1 === 'string') //CSS selector
+        Array.prototype.forEach.call(document.querySelectorAll(arg1), fn);
+    else Array.prototype.forEach.call(arg1, fn); //nodeList
+}
+
+function activateButton(event) {
+    eachElement(this.parentNode.parentNode.parentNode.querySelectorAll('button'), function (button) {
+            button.classList.remove('active');
+        }
+    );
+    this.classList.add('active');
+    if (event)
+        event.preventDefault();
 }
 
 eachElement('.refresh-time', function (el) {
@@ -17,95 +30,53 @@ eachElement('.refresh-time', function (el) {
     el.addEventListener('change', function () {
         if (this.value >= 0) {
             set(this.id, this.value);
-            notifyOptionsChanged();
         }
     });
 });
 
 var range = get('range');
-eachElement('input[name="range"]', function (el) {
-    if (el.value === range) {
-        el.checked = true;
+eachElement('#chart-range button', function (button) {
+    if (button.value === range) {
+        activateButton.call(button, event);
     }
-    el.addEventListener('change', function () {
-        if (this.checked) {
-            set('range', this.value);
-            notifyOptionsChanged();
-        }
+    button.addEventListener('click', function (event) {
+        activateButton.call(button, event);
+        set('range', button.value);
     });
 });
-
-var exchangesEl = document.getElementById('exchanges'),
-    currenciesEl = document.getElementById('currencies');
-
-function activateElement(li) {
-    eachElement('#' + li.parentNode.id + ' li', function (el) {
-        el.classList.remove('active');
-    });
-    li.classList.add('active');
-}
-
-function showCurrencies(exchange) {
-    eachElement('#currencies ul', function (el) {
-        el.classList.add('hidden');
-    });
-    document.querySelector('#currencies #' + exchange).classList.remove('hidden');
-}
-
-function setExchange(exchangeEl) {
-    var exchange = exchangeEl.textContent;
-    console.log('setExchange', exchange);
-    showCurrencies(exchange);
-    activateElement(exchangeEl);
-    set('exchange', exchange);
-//    setCurrency()
-}
-
-function setCurrency(currencyEl) {
-    console.log('setCurrency', currencyEl.textContent);
-    activateElement(currencyEl);
-    set('currency', currencyEl.textContent);
-    notifyOptionsChanged();
-}
 
 exchanges.forEach(function (server) {
-    var li = document.createElement('li'),
-        a = document.createElement('a');
-    a.textContent = server.exchange;
-    li.classList.add(server.exchange);
-    a.href = '#';
-    li.appendChild(a);
-    exchangesEl.appendChild(li);
+    var wrapper = document.createElement('div'),
+        header = document.createElement('h5'),
+        currencyList = document.createElement('div');
 
-    var ul = document.createElement('ul');
-    ul.classList.add('nav', 'nav-pills');
-    ul.id = server.exchange;
+    wrapper.id = server.exchange;
+    header.textContent = server.exchange;
+    currencyList.className = 'btn-group';
+
     server.currencies.forEach(function (currencyObj) {
-        var li = document.createElement('li'),
-            a = document.createElement('a');
-        a.textContent = currencyObj.type;
-        a.href = '#';
-        li.classList.add(currencyObj.type);
-        li.appendChild(a);
-        ul.appendChild(li);
+        var currencyEl = document.createElement('button');
+        currencyEl.textContent = currencyObj.type;
+        currencyEl.className = 'btn btn-default';
+        currencyList.appendChild(currencyEl);
     });
-    currenciesEl.appendChild(ul);
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(currencyList);
+    document.getElementById('exchanges').appendChild(wrapper);
 });
 
-var exchange = get('exchange') || document.querySelector('#exchanges a').textContent,
-    currency = get('currency') || document.querySelector('#currencies a').textContent;
-
-setExchange(document.querySelector('#exchanges .' + exchange));
-setCurrency(document.querySelector('#currencies .' + currency.replace('/', '\\/') + ':not(.hidden)'));
-
-Array.prototype.forEach.call(document.querySelectorAll('#exchanges li'), function (el) {
-    el.addEventListener('click', function () {
-        setExchange(el);
-//        setCurrency(document.querySelector('#currencies li'));
+eachElement(document.querySelectorAll('#exchanges button'), function (button) {
+    button.addEventListener('click', function (event) {
+        activateButton.call(button, event);
+        set('exchange', this.parentNode.parentNode.id);
+        set('currency', this.textContent);
     });
 });
-Array.prototype.forEach.call(document.querySelectorAll('#currencies li'), function (el) {
-    el.addEventListener('click', function () {
-        setCurrency(el);
-    });
+
+var exchange = get('exchange'),
+    currency = get('currency');
+eachElement('#exchanges button', function (button) {
+    if (button.parentNode.parentNode.id === exchange && button.textContent === currency)
+        activateButton.call(button);
 });

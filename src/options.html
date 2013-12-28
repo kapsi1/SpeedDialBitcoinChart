@@ -6,40 +6,55 @@
     <link href="options.css" rel="stylesheet"/>
 </head>
 <body>
-<h1>Bitcurex Ticker options</h1>
+<div class="page-header">
+    <h1>Bitcurex Ticker options</h1>
+</div>
 
-<form name="form">
-    <p>
+<!--<div class="panel panel-default">-->
+<!--<div class="panel-heading">Panel heading without title</div>-->
+<!--<div class="panel-body">-->
+
+<section id="chart-refresh" class="panel panel-default">
+    <div class="panel-body">
         Refresh chart data every
-        <input type="number" class="refresh-time" id="refreshMinutes" min="0" value="1"><label for="refreshMinutes">
+        <input type="number" class="refresh-time" id="refreshMinutes" min="0" value="1"><label
+            for="refreshMinutes">
         minutes</label>
-        <input type="number" class="refresh-time" id="refreshSeconds" min="0" value="0"><label for="refreshSeconds">
+        <input type="number" class="refresh-time" id="refreshSeconds" min="0" value="0"><label
+            for="refreshSeconds">
         seconds</label>
-    </p>
+    </div>
+</section>
 
-    <p>
+<section id="ticker-refresh" class="panel panel-default">
+    <div class="panel-body">
         Refresh last value every
         <input type="number" class="refresh-time" id="refreshLastValSeconds" min="0" value="10"><label
             for="refreshLastValSeconds"> seconds</label>
-    </p>
+    </div>
+</section>
 
-    <p>
-        Show chart data from last
-        <input type="radio" name="range" id="range1" value="10"><label for="range1">10 minutes</label>
-        <input type="radio" name="range" id="range2" value="60"><label for="range2">1 hour</label>
-        <input type="radio" name="range" id="range3" value="180"><label for="range3">3 hours</label>
-        <input type="radio" name="range" id="range4" value="720"><label for="range4">12 hours</label>
-        <input type="radio" name="range" id="range5" value="1440" checked><label for="range5">24 hours</label>
-        <!--<input type="radio" name="range" id="range6" value="4320"><label for="range6">3 days</label>-->
-    </p>
+<section id="chart-range" class="panel panel-default">
+    <div class="panel-heading">
+        Show chart data from last:
+    </div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <button value="10" class="btn btn-default">10 minutes</button>
+            <button value="60" class="btn btn-default">1 hour</button>
+            <button value="180" class="btn btn-default">3 hours</button>
+            <button value="720" class="btn btn-default">12 hours</button>
+            <button value="1440" class="btn btn-default">24 hours</button>
+        </div>
+    </div>
+</section>
 
-    <p>
+<section id="exchanges-wrapper" class="panel panel-default">
+    <div class="panel-heading">
         Show data from:
-    </p>
-    <!--<div id="exchanges"></div>-->
-    <ul id="exchanges" class="nav nav-pills"></ul>
-    <div id="currencies"></div>
-</form>
+    </div>
+    <div id="exchanges" class="panel-body"></div>
+</section>
 <script src="exchangeData.js"></script>
 <script src="options.js"></script>
 </body>

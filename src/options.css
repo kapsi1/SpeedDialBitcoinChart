@@ -1,15 +1,10 @@
-.refresh {
+body {
+    width: 50%;
+    margin: auto;
+}
+
+.refresh-time {
     width: 50px;
-}
-
-.nav-pills {
-    margin-bottom: 10px;
-}
-
-.nav-pills li {
-    width: 90px;
-}
-
-.hidden {
-    display: none;
+    margin-left: 3px;
+    margin-right: 7px;
 }
