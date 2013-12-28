@@ -1,7 +1,7 @@
 var options, chartTimer, tickerTimer, tradesReq = new XMLHttpRequest(), tickerReq = new XMLHttpRequest(),
     width = 228, height = 168, leftPadding = 33, rightPadding = 10, bottomPadding = 20,
     lastEl = document.getElementById("last-value"),
-    dataSrc, exchange, data = [], line, x, y, svg, xAxis, yAxis;
+    currencyObj, exchange, data = [], line, x, y, svg, xAxis, yAxis;
 
 function getOptions() {
     var refreshMinutes = localStorage.getItem('refreshMinutes') || 1,
@@ -17,13 +17,13 @@ function getOptions() {
         for (i = 0; i < exchanges.length; i++) {
             for (j = 0; j < exchanges[i].currencies.length; j++) {
                 if (exchanges[i].currencies[j].type === currency) {
-                    dataSrc = exchanges[i].currencies[j];
+                    currencyObj = exchanges[i].currencies[j];
                     exchange = exchanges[i].exchange;
                 }
             }
         }
     } else {
-        dataSrc = exchanges[0].currencies[0];
+        currencyObj = exchanges[0].currencies[0];
         exchange = exchanges[0].exchange;
     }
     document.getElementById('exchange').textContent = exchange;
@@ -31,10 +31,10 @@ function getOptions() {
 
 line = d3.svg.line()
     .x(function (d) {
-        return x(1000 * d[dataSrc.trades.timeVar]);
+        return x(1000 * d[currencyObj.trades.timeVar]);
     })
     .y(function (d) {
-        return y(d[dataSrc.trades.priceVar]);
+        return y(d[currencyObj.trades.priceVar]);
     });
 x = d3.time.scale().range([leftPadding, width - rightPadding]);
 y = d3.scale.linear().range([height - bottomPadding, bottomPadding]);
@@ -60,31 +60,24 @@ svg.append("g")
 
 function updateChart() {
     x.domain(d3.extent(data, function (d) {
-        return 1000 * d[dataSrc.trades.timeVar];
+        return 1000 * d[currencyObj.trades.timeVar];
     }));
     y.domain([
         d3.min(data, function (d) {
-            return d[dataSrc.trades.priceVar];
+            return d[currencyObj.trades.priceVar];
         }),
         d3.max(data, function (d) {
-            return d[dataSrc.trades.priceVar];
+            return d[currencyObj.trades.priceVar];
         })
     ]);
 
     var lineGraph = svg.selectAll("#chart>path").data([data], function (d) {
-        return 1000 * d[dataSrc.trades.timeVar];
+        return 1000 * d[currencyObj.trades.timeVar];
     });
 
     lineGraph.enter().append("path").attr("d", line);
 
-    lineGraph
-        .attr("d", line);
-//        .attr("transform", null)
-//        .transition(1000)
-//        .ease("linear")
-//        .attr("transform", "translate(" + (
-//            x(1000 * data[data.length - 1].date) - x(1000 * data[data.length - 2].date)
-//            ) + ")");
+    lineGraph.attr("d", line);
 
     svg.selectAll(".xaxis").call(xAxis);
     svg.selectAll(".yaxis").call(yAxis);
@@ -92,12 +85,12 @@ function updateChart() {
 
 tickerReq.onload = function () {
     var value, res = JSON.parse(this.response);
-    if (dataSrc.ticker.containerObject) {
-        value = res[dataSrc.ticker.containerObject][dataSrc.ticker.priceVar];
+    if (currencyObj.ticker.containerObject) {
+        value = res[currencyObj.ticker.containerObject][currencyObj.ticker.priceVar];
     } else {
-        value = res[dataSrc.ticker.priceVar];
+        value = res[currencyObj.ticker.priceVar];
     }
-    lastEl.textContent = +value + ' ' + dataSrc.type;
+    lastEl.textContent = +value + ' ' + currencyObj.type;
 };
 
 tradesReq.onload = function () {
@@ -114,17 +107,17 @@ function reload() {
     clearInterval(tickerTimer);
 
     tickerTimer = setInterval(function () {
-        tickerReq.open("get", dataSrc.ticker.url, true);
+        tickerReq.open("get", currencyObj.ticker.url, true);
         tickerReq.send();
     }, options.lastValRefreshTime);
-    tickerReq.open("get", dataSrc.ticker.url, true);
+    tickerReq.open("get", currencyObj.ticker.url, true);
     tickerReq.send();
 
     chartTimer = setInterval(function () {
-        tradesReq.open("get", dataSrc.trades.url, true);
+        tradesReq.open("get", currencyObj.trades.url, true);
         tradesReq.send();
     }, options.chartRefreshTime);
-    tradesReq.open("get", dataSrc.trades.url, true);
+    tradesReq.open("get", currencyObj.trades.url, true);
     tradesReq.send();
 }
 
